@@ -32,13 +32,18 @@ var PostsList = React.createClass({
         var postNodes = this.state.data.map(function(post){
               console.log("postfile");
               console.log(post.file);
+              if (post.file === "posts/about.md") {
+                return;
+              };
               return  (
+                <div className="text-center">
                 <Post change={temp} file={post.file} />
+                </div>
                 )});
 
         return (
             <div className="postsList">
-                <h1>Posts</h1>
+                <div className="centerTitle">Posts</div>
                 {postNodes}
             </div>
             )
@@ -55,8 +60,10 @@ var Post = React.createClass({
     this.props.change(this.props.file);
   },
   render: function(){
+    var name = this.props.file.split("-")[3].replace(".md", "").replace("_", " ");
+    var date = this.props.file.substring(6, 10);
     return (
-        <div onClick={this.handleClick}> {this.props.file} </div>
+        <div className="postitem" onClick={this.handleClick}> {name} - {date}</div>
       )
   }
 
@@ -69,7 +76,7 @@ var PostMain = React.createClass({
     componentDidMount: function() {
       console.log("link: " + "posts/" + this.props.file);
       $.ajax({
-        url: "posts/" + this.props.file,
+        url: this.props.file,
         dataType: "text",
         type: 'get',
         success: function(data) {
@@ -84,9 +91,11 @@ var PostMain = React.createClass({
     render: function() {
       var rawMarkup = marked(this.state.data, {sanitize: true});
       return  (
-        <div className="Post">
-          <span dangerouslySetInnerHTML={{__html: rawMarkup}} />
+      <div className="Row">
+        <div className="col-md-8 col-centered">
+            <span dangerouslySetInnerHTML={{__html: rawMarkup}} />
         </div>
+      </div>
         )
     },
 
@@ -95,23 +104,29 @@ var PostMain = React.createClass({
 
 var NavBar = React.createClass({
   handleClick: function(){
-    this.props.change('main')
+    this.props.change('posts')
   },
   render: function(){
     return (
-        <div onClick={this.handleClick}> Home </div>
+      <div class="col-md-12 text-center">
+        <ul className="nav nav-pills center-pills">
+          <li onClick={this.handleClick} role="presentation" className="active"><a href="#">Main</a></li>
+          <li role="presentation"><a href="about.html">About</a></li>
+        </ul>
+      </div>
       )
   }
   });
 var Main = React.createClass({
   getInitialState: function() {
-    return {currentPage: 'main', currentFile: null};
+    return {currentPage: 'posts', currentFile: null};
   },
 
   handleChange: function(file){
 
-    if (file === 'main'){
-          this.setState({currentPage: 'main'});
+    if (file === 'posts'){
+          this.setState({currentPage: 'posts'});
+          this.setState({currentPage: 'posts'});
     } else {
           this.setState({currentPage: 'post'});
           this.setState({currentFile: file});
@@ -119,7 +134,7 @@ var Main = React.createClass({
   },
   render: function() {
     var inner;
-    if (this.state.currentPage === 'main'){
+    if (this.state.currentPage === 'posts'){
       inner = <PostsList url='posts.json' change={this.handleChange}/>
     } else if (this.state.currentPage === 'post'){
       console.log("file: " + this.state.currentFile);
