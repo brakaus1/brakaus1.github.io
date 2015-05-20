@@ -61,7 +61,7 @@ var Post = React.createClass({
   },
   render: function(){
     var name = this.props.file.split("-")[3].replace(".md", "").replace("_", " ");
-    var date = this.props.file.substring(6, 10);
+    var date = this.props.file.substring(6, 16);
     return (
         <div className="postitem" onClick={this.handleClick}> {name} - {date}</div>
       )
